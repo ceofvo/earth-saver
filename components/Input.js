@@ -8,19 +8,21 @@ function Input({
     onChangeValue,
     value,
     isValid,
-    placeholderText
+    placeholderText,
+    activatemulti
 }) {
     return (
         <View>
             <TextInput 
-                style={[styles.inputField, isValid && styles.inputInvalid]}
+                style={[styles.inputField, isValid && styles.invalidInput]}
                 autoCapitalize="none"
                 keyboardType={keyboardType}
                 secureTextEntry={secure}
                 onChangeText={onChangeValue}
                 value={value}
                 placeholder={placeholderText}
-                placeholderTextColor={ThemeColor.textColor} 
+                placeholderTextColor={ThemeColor.holderColor} 
+                multiline = {activatemulti}
             />
         </View>
     );
@@ -38,7 +40,11 @@ const styles =  StyleSheet.create({
         textAlign: "center",
         marginTop: 30,
     },
-    inputInvalid: {
-        backgroundColor: "#f2f2f2"
-    }
+    invalidInput: {
+        borderColor: ThemeColor.errorDark,
+        borderWidth: 1,
+    },
+    invalidText: {
+        color: ThemeColor.errorDark
+    },
 })

@@ -55,23 +55,6 @@ function LoginScreen() {
       );
     });
 
-  //   axios.post(url, {
-  //     email: enteredEmail,
-  //     password:enteredPassword,
-  //   })
-  //   .then((response) => response.json())
-  //   .then(function (json) {
-  //     Alert.alert(
-  //       'Login sucessful!',
-  //       'You are in. Horray ' + json.message
-  //     );
-  //   })
-  //   .catch(function (error) {
-  //     Alert.alert(
-  //       'Authentication failed!',
-  //       'Could not log you in. Please check your credentials or try again later!'
-  //     );
-  //   });
   }
 
   return (
