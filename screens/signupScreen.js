@@ -140,7 +140,7 @@ function SignUpScreen() {
           <Button content="Create Account" onPress={registerHandler} />
           <GhostButton
             textAlign="center"
-            content="Don't have an account? Sign up here"
+            content="Already have an account? Login"
             onPress={() => navigation.replace("Login")}
           />
         </View>

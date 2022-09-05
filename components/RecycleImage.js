@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 
@@ -10,8 +10,7 @@ function RecycleImage({ onCapturedImage }) {
 
   let openCameraAsyncHandler = async () => {
     try {
-      let permissionResponse =
-        await ImagePicker.requestCameraPermissionsAsync();
+      let permissionResponse = await ImagePicker.requestCameraPermissionsAsync();
 
       if (permissionResponse.granted === false) {
         alert("Permission to use camera is required!");
@@ -28,7 +27,10 @@ function RecycleImage({ onCapturedImage }) {
         return;
       }
 
-      setCapturedImage({ localUri: pickerResult.uri });
+      setCapturedImage({ 
+        localUri: pickerResult.uri, 
+        localType: pickerResult.type,
+      });
     } catch (error) {
       console.log("Error: ", error);
     }

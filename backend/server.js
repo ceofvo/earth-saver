@@ -1,33 +1,33 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer  = require('multer');
+const mysql = require("mysql");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 const port = 3000;
 
 //configuring express to use body-parser as middle-ware.
-const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Cors for cross origin allowance
-const cors = require("cors");
 app.use(cors());
+
+// Initialize the main project folder
+app.use(express.static('public'));
 
 const server = app.listen(port, () => {
   console.log(`Local Server running at port ${port}`);
 });
 
-const mysql = require("mysql");
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
   database: "earth_saver",
-});
-
-app.get("/", (request, response) => {
-  response.send("Getting here is good");
 });
 
 app.post("/api/register", (request, response) => {
@@ -150,25 +150,61 @@ app.post("/api/users/:userId", (request, response) => {
 
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, './public/images')     
+  },
+  filename: (req, file, cb) => {
+      const uniqueSuffix = `${Date.now()}_${Math.round(Math.random())}.jpg`;
+      cb(null, file.fieldname + '_' + uniqueSuffix)
+  }
+})
 
-app.post("/api/request/add", (request, response) => {
+const upload = multer({
+  storage: storage
+});
+
+app.post("/api/request/add", upload.single('wasteimage'), (request, response) => {
   const requestDate = request.body.requestDate;
   const requestWeight = request.body.requestWeight;
-  const requestImage = request.body.requestImage;
   const requestLocation = request.body.requestLocation;
   const userid = request.body.userId;
-  console.log(request.body)
+  const requestImage = request.file.filename;
+
+  console.log("Body", request.body)
+  console.log("File", request.file)
 
   connection.query(
     "INSERT INTO requests (req_weight, pickup_date, req_image, req_location, req_user_id) VALUES (?,?,?,?,?)",
     [requestWeight, requestDate, requestImage, requestLocation, userid],
     (error, result, fields) => {
       if (error) {
-        response.send({ message: "Failed", reason: "Recycle request failed" });
+          response.send({ message: "Failed", reason: "Recycle request failed" });
       } else {
-              response.send({ message: "Success", reason: "Recycle request added successfully"});
+          response.send({ message: "Success", reason: "Recycle request added successfully"});
       }
     }
   )
 
+});
+
+app.get("/api/requests/:userId", (request, response) => {
+  const userid = request.params.userId;
+
+  connection.query(
+    "SELECT * FROM requests WHERE req_user_id = ?",
+    [userid],
+    (error, result, fields) => {
+      if (error) {
+        response.send({
+          message: "Failed",
+          reason: "Database connection error",
+        });
+      } else if (result) {        
+        response.send({
+          message: "Success",
+          data: result 
+        });
+      }
+    })
 });

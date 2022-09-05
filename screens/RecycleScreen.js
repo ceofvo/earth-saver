@@ -15,20 +15,15 @@ function RecycleScreen() {
     const navigation = useNavigation();
     const isFocused = useIsFocused();
 
-    const [enteredDate, setEnteredDate] = useState();
-    const [enteredWeight, setEnteredWeight] = useState();
-    const [selectedImage, setSelectedImage] = useState();
-    const [enteredLocation, setEnteredLocation] = useState();
+    const [enteredDate, setEnteredDate] = useState("");
+    const [enteredWeight, setEnteredWeight] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [enteredLocation, setEnteredLocation] = useState(null);
 
-    // const [invalidData, setInvalidData] = useState({
-    //   invalidDate: false,
-    //   invalidWeight: false,
-    //   invalidImage: false,
-    // });
-    const [invalidDate, setInvalidDate] = useState(false);
-    const [invalidWeight, setInvalidWeight] = useState(false);
-    const [invalidImage, setInvalidImage] = useState(false);
-    const [invalidLocation, setInvalidLocation] = useState(false);
+    const [invalidDate, setInvalidDate] = useState(true);
+    const [invalidWeight, setInvalidWeight] = useState(true);
+    const [invalidImage, setInvalidImage] = useState(true);
+    const [invalidLocation, setInvalidLocation] = useState(true);
 
     function enteredWeightHandler(enteredValue) {
       setEnteredWeight(enteredValue);
@@ -57,8 +52,6 @@ function RecycleScreen() {
         setInvalidWeight(true)
       }  else {
         setInvalidWeight(false)
-        //setInvalidData({...invalidData, invalidWeight : false})
-        //invalidData.invalidWeight = false;
       }
 
       if (!selectedImage) {
@@ -79,9 +72,20 @@ function RecycleScreen() {
       console.log("Location",enteredLocation)
       console.log(invalidDate, invalidWeight, invalidImage, invalidLocation)
 
-      if (!invalidWeight && !invalidDate && !invalidImage && !invalidLocation) {
+      if (invalidWeight === false && invalidDate === false && invalidImage === false && invalidLocation === false) {
         let dateSplit = enteredDate.split('-');
         let newDate = `${dateSplit[2]}-${dateSplit[1]}-${dateSplit[0]}`;
+
+        let formInputs = new FormData();
+        formInputs.append("requestWeight", enteredWeight);
+        formInputs.append("requestDate", newDate);
+        formInputs.append("wasteimage", {
+          uri : selectedImage.localUri,
+          type: "image/jpg",
+          name: "imagename" 
+         });
+        formInputs.append("requestLocation", enteredLocation);
+        formInputs.append("userId", userData.id);
 
         const url = `${BASE_URL}/api/request/add`;
 
@@ -89,15 +93,9 @@ function RecycleScreen() {
           method: 'POST',
           headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'multipart/form-data'
           },
-          body: JSON.stringify({
-            requestWeight: enteredWeight,
-            requestDate: newDate,
-            requestImage: selectedImage.localUri,
-            requestLocation:enteredLocation,
-            userId:userData.id
-          })
+          body: formInputs
         })
         .then((response) => response.json())
         .then((json) => {
@@ -126,6 +124,7 @@ function RecycleScreen() {
           }
         })
         .catch((error) => {
+          console.log("Error:", error)
           Alert.alert(
             'Recycle request failed!',
             'Please try again later.'

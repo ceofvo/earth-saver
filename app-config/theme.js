@@ -7,4 +7,5 @@ export const ThemeColor = {
     holderColor: '#7a7a7a',
     lightBg: 'rgba(228, 229, 236, 0.6)',
     whiteBg: '#ffffff',
+    whiteText: '#ffffff',
   }

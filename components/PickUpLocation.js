@@ -15,7 +15,6 @@ const PickUpLocation = ({onSelectedLocation}) => {
       placeholder="e.g Kasumu Street, Lagos"
       fetchDetails={true}
       onPress={(data, details = null) => {
-        // console.log("Data", data);
         getUserLocation(details.formatted_address)
       }}
       query={{
